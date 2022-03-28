@@ -1,0 +1,16 @@
+.action-buttons {
+    display: flex;
+    justify-content: flex-start;
+}
+
+.point-table {
+    text-align: -webkit-center;
+}
+
+.point-align {
+    text-align: center;
+}
+
+.game-dashboard {
+    display: flex;
+}
