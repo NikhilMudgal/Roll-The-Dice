@@ -14,6 +14,8 @@ export class AppComponent {
   public playerInfo:any = {};
   public dataSource:any = [];
   public currentPlayer = 0;
+  public number = 0;
+  public gameFinished = false;
 
   onSubmit() {
     const playerScores:any = {};
@@ -21,11 +23,15 @@ export class AppComponent {
      const player = 'Player - ' + ( i + 1);
      this.displayedColumns.push(player);
      playerScores[player] = 0;
-     const playerDetails = { previousNumber: 0, totalPoints: 0, penalty: false }
+     const playerDetails = { previousNumber: 0, totalPoints: 0, penalty: false, Rank: 0, pointsAccumulated: false }
      this.playerInfo[(i + 1)] = playerDetails; 
     }
     this.dataSource = [playerScores];
     this.isSubmitted = true;
+  }
+
+  setDisplayedColumns() {
+
   }
 
   onReset() {
@@ -36,43 +42,84 @@ export class AppComponent {
     this.playerInfo = {};
     this.currentPlayer = 0;
     this.isSubmitted = false;
+    this.gameFinished = false;
   }
 
   rollDice() {
-    const number = Math.floor((Math.random() * 6) + 1);
+    this.number = Math.floor((Math.random() * 6) + 1);
     if (this.currentPlayer === 0) { // game has just started
       this.currentPlayer = 1;
-      this.dataSource[0]['Player - ' + this.currentPlayer] += number;
-      this.playerInfo[this.currentPlayer]['previousNumber'] = number;
-      this.playerInfo[this.currentPlayer]['totalPoints'] += number;
-      this.setNextPlayer()
+      this.dataSource[0]['Player - ' + this.currentPlayer] += this.number;
+      this.playerInfo[this.currentPlayer]['previousNumber'] = this.number;
+      this.playerInfo[this.currentPlayer]['totalPoints'] += this.number;
+      // this.setNextPlayer()
     } else if (this.playerInfo[this.currentPlayer]['penalty']) { // Reject the turn of the current player if it has penalty
       this.playerInfo[this.currentPlayer]['penalty'] = false;
-      this.setNextPlayer();
+      this.playerInfo[this.currentPlayer]['previousNumber'] = this.number;
+      // this.setNextPlayer();
     } else {
-      this.dataSource[0]['Player - ' + this.currentPlayer] += number;
-      this.playerInfo[this.currentPlayer]['totalPoints'] += number;
-    if(number === 6) {
-      if(this.playerInfo[this.currentPlayer]['previousNumber'] === 6) {
-        this.setNextPlayer();
-      }
-    } else {
-      if(number === 1 && this.playerInfo[this.currentPlayer]['previousNumber'] === 1) {
+      if(this.number === 1 && this.playerInfo[this.currentPlayer]['previousNumber'] === 1) {
         this.playerInfo[this.currentPlayer]['penalty'] = true;
-      }
-      this.setNextPlayer();
+        this.playerInfo[this.currentPlayer]['previousNumber'] = this.number;
+        // this.setNextPlayer();
+      } else {
+        this.dataSource[0]['Player - ' + this.currentPlayer] += this.number;
+        this.playerInfo[this.currentPlayer]['totalPoints'] += this.number;
+        this.playerInfo[this.currentPlayer]['previousNumber'] = this.number;
+        if (this.number !== 6) {
+          // this.setNextPlayer()
+        }
+      }    
     }
-    }
+    this.setNextPlayer()
+
   }
 
   setNextPlayer() {
-    if(this.currentPlayer === this.totalPlayers) {   // if the done is of last player
-      this.currentPlayer = 1;
-    } else {
-      this.currentPlayer += 1;
+    if (this.playerInfo[this.currentPlayer]['totalPoints'] >= this.totalPoints) {
+      this.playerInfo[this.currentPlayer]['pointsAccumulated']= true;
     }
-  }
+      const sortedPlayers = Object.keys(this.playerInfo).sort((a,b) => {
+        return this.playerInfo[b]['totalPoints'] - this.playerInfo[a]['totalPoints']
+      });
+      this.displayedColumns = [];
+      for(let i = 0; i < sortedPlayers.length; i++) {
+        const player = 'Player - ' + sortedPlayers[i];
+        this.displayedColumns.push(player); 
+      }
+      if(this.currentPlayer === this.totalPlayers && this.number !== 6) {   // if the turn was of last player
+        const selectNextPlayer = Object.keys(this.playerInfo).find((e:any) => !this.playerInfo[e]['pointsAccumulated'])
+        if (selectNextPlayer && this.number !== 6) {
+          this.currentPlayer = parseInt(selectNextPlayer,10);
+        } else {
+          this.gameFinished = true;
+        }
+      } else if(this.number !== 6) {
+        const lessthanCurrentPlayer = [];
+        const greaterThanCurrenPlayer = [];
+        const sortedArray:any = Object.keys(this.playerInfo).map((e: any) => {
+           return parseInt(e, 10)
+          }
+          );
+        const currentKeyIndex = sortedArray.findIndex((player: any) => player === this.currentPlayer);
+        if(currentKeyIndex !== -1) {
+          if(currentKeyIndex !== 0) {
+            lessthanCurrentPlayer.push(...sortedArray.slice(0, currentKeyIndex));
+          }
+          greaterThanCurrenPlayer.push(...sortedArray.slice(currentKeyIndex + 1));
+          let selectNextPlayer = greaterThanCurrenPlayer.find((e) => !this.playerInfo[e]['pointsAccumulated'])
+          if (selectNextPlayer) {
+            this.currentPlayer = parseInt(selectNextPlayer, 10);
+          } else {
+            selectNextPlayer = lessthanCurrentPlayer.find((e) => !this.playerInfo[e]['pointsAccumulated'])
+            if (selectNextPlayer) {
+              this.currentPlayer = parseInt(selectNextPlayer, 10);
+            } else {
+              this.gameFinished = true;
+            }
+          }
 
-
-
+        }
+      }
+}
 }

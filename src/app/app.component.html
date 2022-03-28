@@ -1,16 +1,16 @@
 <mat-card>
   <div>
-
+    <h1>Roll the Dice</h1>
     <form #playerForm="ngForm">
       <div>
 
         <mat-form-field class="half-width">
-          <input matInput [(ngModel)]="totalPlayers" min="1" name="totalPlayers" type="number" placeholder="Enter No. Of Players" required>
+          <input matInput [disabled]="isSubmitted" [(ngModel)]="totalPlayers" min="1" name="totalPlayers" type="number" placeholder="Enter No. Of Players" required>
         </mat-form-field>
       </div>
         
     <mat-form-field class="half-width">
-      <input matInput type="number" [(ngModel)]="totalPoints" min="1" name="totalPoints" placeholder="Enter Points of Accumulate " required>
+      <input matInput type="number" [disabled]="isSubmitted" [(ngModel)]="totalPoints" min="1" name="totalPoints" placeholder="Enter Points of Accumulate " required>
     </mat-form-field>
   </form>
 </div> 
@@ -25,20 +25,21 @@
       <table mat-table  [dataSource]="dataSource" class="mat-elevation-z8">
         <ng-container *ngFor="let column of displayedColumns" [matColumnDef]="column">
           <th mat-header-cell *matHeaderCellDef> {{ column }} </th>
-          <td mat-cell *matCellDef="let element"> {{element[column]}} </td>
+          <td mat-cell *matCellDef="let element" class="right-align"> {{element[column]}} </td>
         </ng-container>
         
         <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
         <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
       </table>
       
-      <button mat-raised-button color="primary" (click)="rollDice()">Roll The Dice </button>
+      <button mat-raised-button color="primary" [disabled]="gameFinished" (click)="rollDice()">{{currentPlayer ? 'Next Turn' : 'Start'}} </button>
       
     </div>
 
-    <div *ngIf="this.currentPlayer">
-      <span>Current Player: {{currentPlayer}}</span>
-      <span>Player's Previous Number {{playerInfo[this.currentPlayer]['previousNumber']}}</span>
+    <div class="play-info" *ngIf="this.currentPlayer">
+      <div>Current Number: {{number}}</div>
+      <div>Current Player: {{currentPlayer}}</div>
+      <div>Player's Previous Number {{playerInfo[this.currentPlayer]['previousNumber']}}</div>
     </div>
   </div>
 </mat-card>
