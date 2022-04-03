@@ -50,7 +50,7 @@ export class AppComponent {
   }
 
   rollDice() {
-    // this.number = Math.floor((Math.random() * 6) + 1);
+    this.number = Math.floor((Math.random() * 6) + 1);
     if (this.currentPlayer === 0) { // game has just started
       this.currentPlayer = 1;
       this.dataSource[0]['Player - ' + this.currentPlayer] += this.number;
@@ -71,9 +71,6 @@ export class AppComponent {
         this.dataSource[0]['Player - ' + this.currentPlayer] += this.number;
         this.playerInfo[this.currentPlayer]['totalPoints'] += this.number;
         this.playerInfo[this.currentPlayer]['previousNumber'] = this.number;
-        if (this.number !== 6) {
-      
-        }
       }    
     }
     this.setNextPlayer()
@@ -81,17 +78,11 @@ export class AppComponent {
   }
 
   setNextPlayer() {
+    const previousPlayer = this.currentPlayer;
     if (this.playerInfo[this.currentPlayer]['totalPoints'] >= this.totalPoints) {
       this.playerInfo[this.currentPlayer]['pointsAccumulated']= true;
     }
-      const sortedPlayers = Object.keys(this.playerInfo).sort((a,b) => {
-        return this.playerInfo[b]['totalPoints'] - this.playerInfo[a]['totalPoints']
-      });
-      this.displayedColumns = [];
-      for(let i = 0; i < sortedPlayers.length; i++) {
-        const player = 'Player - ' + sortedPlayers[i];
-        this.displayedColumns.push(player); 
-      }
+    this.sortPlayers();
       if(this.currentPlayer === this.totalPlayers && this.number !== 6) {   // if the turn was of last player
         const selectNextPlayer = Object.keys(this.playerInfo).find((e:any) => !this.playerInfo[e]['pointsAccumulated'])
         if (selectNextPlayer && this.number !== 6) {
@@ -99,7 +90,7 @@ export class AppComponent {
         } else {
           this.gameFinished = true;
         }
-      } else if(this.number !== 6) {
+      } else if(this.number !== 6 || this.playerInfo[this.currentPlayer]['pointsAccumulated']) {
         const lessthanCurrentPlayer = [];
         const greaterThanCurrenPlayer = [];
         const sortedArray:any = Object.keys(this.playerInfo).map((e: any) => {
@@ -128,18 +119,38 @@ export class AppComponent {
 
       }
       let message = '';
-      if(this.number === 6) {
-        message = 'Player - ' + this.currentPlayer + ' You have one more Chance!!!'
-      } else {
-        message = 'Player - ' + this.currentPlayer + ' its your chance'
+      if(this.playerInfo[this.currentPlayer]['penalty']) {
+        message = 'Player - ' + this.currentPlayer + ' is having penalty'
+        this.openSnackBar(message, true)
+      }
+      else {
+        if(this.number === 6 && !this.playerInfo[previousPlayer]['pointsAccumulated']) {
+          message = 'Player - ' + previousPlayer + ' You have one more Chance!!!'
+        } else {
+          message = 'Player - ' + this.currentPlayer + ' its your chance'
+        }
+        this.openSnackBar(message);
       }
       
-      this.openSnackBar(message);
 }
 
-      openSnackBar(message: string) {
+    sortPlayers() {
+      const sortedPlayers = Object.keys(this.playerInfo).sort((a,b) => {
+        return this.playerInfo[b]['totalPoints'] - this.playerInfo[a]['totalPoints']
+      });
+      this.displayedColumns = [];
+      for(let i = 0; i < sortedPlayers.length; i++) {
+        const player = 'Player - ' + sortedPlayers[i];
+        this.displayedColumns.push(player); 
+      }
+    }
+
+      openSnackBar(message: string, isPlayerHavingPenalty = false) {
         this.snackbar.open(message, 'X', {
           duration: 1000
-        })
+        });
+        if(isPlayerHavingPenalty) {
+          this.setNextPlayer();
+        }
     }
 }

@@ -19,11 +19,7 @@
     <button mat-raised-button type ="submit" class="right-margin" [disabled]="playerForm.invalid || isSubmitted" (click)="onSubmit()" color="primary">Submit</button>
     <button mat-raised-button [disabled]="playerForm.invalid" color="accent" (click)="onReset()">Reset</button>
     </div>
-  
-    <input matInput type="number" [(ngModel)]="number">
-  
-    <button (click)="rollDice()">RollDice</button>
-    
+      
   </mat-card>
   
   <mat-card class="three-vh-pad">
@@ -41,12 +37,6 @@
       
       <button mat-raised-button color="primary" [disabled]="gameFinished" (click)="rollDice()">{{currentPlayer ? 'Next Turn' : 'Start'}} </button>
       
-    </div>
-
-    <div class="play-info" *ngIf="this.currentPlayer">
-      <div>Current Number: {{number}}</div>
-      <div>Current Player: {{currentPlayer}}</div>
-      <div>Player's Previous Number {{playerInfo[this.currentPlayer]['previousNumber']}}</div>
     </div>
   
   </div>

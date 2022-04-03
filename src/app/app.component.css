@@ -36,3 +36,17 @@ mat-card {
 .three-vh-pad {
     padding-top: 3vh;
 }
+
+::ng-deep th.mat-header-cell{
+    padding: 2vw;
+    background-color: rgb(88, 88, 94);
+    font-weight: bolder;
+    color: rgb(255, 255, 255);
+    text-align: center;
+    border-right: 1px solid rgb(255, 255, 255);
+}
+
+::ng-deep td.mat-cell {
+    text-align: center;
+    width: 6vw;
+}
