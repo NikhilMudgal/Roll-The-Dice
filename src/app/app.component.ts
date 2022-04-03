@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-root',
@@ -16,6 +17,9 @@ export class AppComponent {
   public currentPlayer = 0;
   public number = 0;
   public gameFinished = false;
+
+  constructor(private snackbar: MatSnackBar) {
+  }
 
   onSubmit() {
     const playerScores:any = {};
@@ -46,28 +50,29 @@ export class AppComponent {
   }
 
   rollDice() {
-    this.number = Math.floor((Math.random() * 6) + 1);
+    // this.number = Math.floor((Math.random() * 6) + 1);
     if (this.currentPlayer === 0) { // game has just started
       this.currentPlayer = 1;
       this.dataSource[0]['Player - ' + this.currentPlayer] += this.number;
       this.playerInfo[this.currentPlayer]['previousNumber'] = this.number;
       this.playerInfo[this.currentPlayer]['totalPoints'] += this.number;
-      // this.setNextPlayer()
+  
     } else if (this.playerInfo[this.currentPlayer]['penalty']) { // Reject the turn of the current player if it has penalty
       this.playerInfo[this.currentPlayer]['penalty'] = false;
       this.playerInfo[this.currentPlayer]['previousNumber'] = this.number;
-      // this.setNextPlayer();
+  
     } else {
       if(this.number === 1 && this.playerInfo[this.currentPlayer]['previousNumber'] === 1) {
         this.playerInfo[this.currentPlayer]['penalty'] = true;
         this.playerInfo[this.currentPlayer]['previousNumber'] = this.number;
-        // this.setNextPlayer();
+        const message = 'Player - ' + this.currentPlayer + ' is given Penalty';
+        this.openSnackBar(message)
       } else {
         this.dataSource[0]['Player - ' + this.currentPlayer] += this.number;
         this.playerInfo[this.currentPlayer]['totalPoints'] += this.number;
         this.playerInfo[this.currentPlayer]['previousNumber'] = this.number;
         if (this.number !== 6) {
-          // this.setNextPlayer()
+      
         }
       }    
     }
@@ -120,6 +125,21 @@ export class AppComponent {
           }
 
         }
+
       }
+      let message = '';
+      if(this.number === 6) {
+        message = 'Player - ' + this.currentPlayer + ' You have one more Chance!!!'
+      } else {
+        message = 'Player - ' + this.currentPlayer + ' its your chance'
+      }
+      
+      this.openSnackBar(message);
 }
+
+      openSnackBar(message: string) {
+        this.snackbar.open(message, 'X', {
+          duration: 1000
+        })
+    }
 }

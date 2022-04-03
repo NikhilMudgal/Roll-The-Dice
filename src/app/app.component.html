@@ -1,26 +1,33 @@
-<mat-card>
-  <div>
-    <h1>Roll the Dice</h1>
-    <form #playerForm="ngForm">
-      <div>
-
-        <mat-form-field class="half-width">
-          <input matInput [disabled]="isSubmitted" [(ngModel)]="totalPlayers" min="1" name="totalPlayers" type="number" placeholder="Enter No. Of Players" required>
-        </mat-form-field>
-      </div>
-        
-    <mat-form-field class="half-width">
-      <input matInput type="number" [disabled]="isSubmitted" [(ngModel)]="totalPoints" min="1" name="totalPoints" placeholder="Enter Points of Accumulate " required>
-    </mat-form-field>
-  </form>
-</div> 
-<div class="action-buttons">
-  <button mat-raised-button type ="submit" [disabled]="playerForm.invalid || isSubmitted" (click)="onSubmit()" color="primary">Submit</button>
-  <button mat-raised-button [disabled]="playerForm.invalid" color="accent" (click)="onReset()">Reset</button>
-  </div>
-
-  <div class="game-dashboard" *ngIf="dataSource.length">
-
+<div class="three-vh-pad">
+  <mat-card>
+    <div>
+      <h1>Roll the Dice</h1>
+      <form #playerForm="ngForm">
+        <div>
+  
+          <mat-form-field class="half-width">
+            <input matInput [disabled]="isSubmitted" [(ngModel)]="totalPlayers" min="1" name="totalPlayers" type="number" placeholder="Enter No. Of Players" required>
+          </mat-form-field>
+        </div>
+          
+      <mat-form-field class="half-width">
+        <input matInput type="number" [disabled]="isSubmitted" [(ngModel)]="totalPoints" min="1" name="totalPoints" placeholder="Enter Points of Accumulate " required>
+      </mat-form-field>
+    </form>
+  </div> 
+  <div class="action-buttons">
+    <button mat-raised-button type ="submit" class="right-margin" [disabled]="playerForm.invalid || isSubmitted" (click)="onSubmit()" color="primary">Submit</button>
+    <button mat-raised-button [disabled]="playerForm.invalid" color="accent" (click)="onReset()">Reset</button>
+    </div>
+  
+    <input matInput type="number" [(ngModel)]="number">
+  
+    <button (click)="rollDice()">RollDice</button>
+    
+  </mat-card>
+  
+  <mat-card class="three-vh-pad">
+    <div class="game-dashboard" *ngIf="dataSource.length">
     <div class="point-table" >  
       <table mat-table  [dataSource]="dataSource" class="mat-elevation-z8">
         <ng-container *ngFor="let column of displayedColumns" [matColumnDef]="column">
@@ -41,5 +48,8 @@
       <div>Current Player: {{currentPlayer}}</div>
       <div>Player's Previous Number {{playerInfo[this.currentPlayer]['previousNumber']}}</div>
     </div>
+  
   </div>
-</mat-card>
+  </mat-card>
+     
+</div>
